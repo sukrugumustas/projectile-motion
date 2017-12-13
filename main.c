@@ -5,15 +5,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <limits.h>
 
 int checkCharacters(char *a);
-
 double getValue();
-
 double getValueWithBound(double b);
-
 void xByInterval();
-
 void hByInterval();
 
 double V0, time, Vx = 0, Vy, flyingTime, g = 9.80665;
@@ -52,6 +49,33 @@ int main() {
     return 0;
 }
 
+//This method is used to get values from user.
+double getValue() {
+    //A character array to store user entered string.
+    char *a = (char *) malloc(sizeof(char));
+    int boolean = 1;
+    double returner;
+    while (boolean) {
+        fgets(a, INT_MAX, stdin);
+        if (a[strlen(a)-1]=='\n') {
+            a[strlen(a)-1] = '\0';
+        }
+        switch (checkCharacters(a)) {
+            case 0:
+                printf("Your value must be greater than zero! Please reenter: ");
+                break;
+            case 1:
+                printf("You entered invalid characters! Please reenter: ");
+                break;
+            default:
+                boolean = 0;
+        }
+    }
+    returner = atof(a);
+    free(a);
+    return returner;
+}
+
 int checkCharacters(char *a) {
     int i, length = strlen(a);
     for (i = 0; i < length; i++) {
@@ -63,24 +87,6 @@ int checkCharacters(char *a) {
         return 0;
     }
     return 2;
-}
-
-double getValue() {
-    char *a = (char *) malloc(sizeof(char));
-    while (1) {
-        switch (checkCharacters(gets(a))) {
-            case 0    :
-                printf("Your value must be greater than zero! Please reenter: ");
-                break;
-            case 1    :
-                printf("You entered invalid characters! Please reenter: ");
-                break;
-            default    :
-                goto exit_loop;
-        }
-    }
-    exit_loop:;
-    return atof(a);
 }
 
 double getValueWithBound(double b) {
