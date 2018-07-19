@@ -7,7 +7,7 @@
 #include <ctype.h>
 #include <limits.h>
 
-int checkCharacters(char *a);
+int isPositiveNumber(char *a);
 
 double getValue();
 
@@ -55,30 +55,24 @@ int main() {
 double getValue() {
     //A character array to store user entered string.
     char *a = (char *) malloc(sizeof(char)), *ptr;
-    int boolean = 1;
     double returner;
-    while (boolean) {
+    while (1) {
         fgets(a, INT_MAX, stdin);
         if (a[strlen(a) - 1] == '\n') {
             a[strlen(a) - 1] = '\0';
         }
-        switch (checkCharacters(a)) {
-            case 0:
-                printf("You must enter positive integer number! Please reenter: ");
-                break;
-            default:
-                boolean = 0;
-        }
+        if (!isPositiveNumber(a)) printf("You must enter positive number! Please reenter: ");
+        else break;
     }
     returner = strtod(a, &ptr);
     free(a);
     return returner;
 }
 
-int checkCharacters(char *a) {
+int isPositiveNumber(char *a) {
     int i, length = (int) strlen(a);
     for (i = 0; i < length; i++) {
-        if (!(isdigit(a[i]) || a[i] == '.')) {
+        if (!(isdigit(a[i]) || a[i] == '.' || a[i]=='+')) {
             return 0;
         }
     }
