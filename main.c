@@ -8,15 +8,17 @@
 #include <limits.h>
 
 int checkCharacters(char *a);
-double getValue();
-double getValueWithBound(double b);
-void xByInterval();
-void hByInterval();
 
-double V0, time, Vx = 0, Vy, flyingTime, g = 9.80665;
+double getValue();
+
+double getValueWithBound(double b);
+
+void hByInterval(double time, double flyingTime, double Vy, double g);
+
+void xByInterval(double time, double flyingTime, double Vx);
 
 int main() {
-    double theta, radian;
+    double theta, radian, V0, time, Vx = 0, Vy, flyingTime, g = 9.80665;
     //entering the V0
     printf("Please enter the initial velocity (V0): ");
     V0 = getValue();
@@ -36,14 +38,14 @@ int main() {
     //entering the time interval
     time = getValueWithBound(flyingTime);
     printf("\nThe Vx value of V0 is %.16lf.\n"
-                   "The Vy value of V0 is %.16lf.\n\n"
-                   "h by %.16lf time interval:\n\n"
-                   "Time\t\t\tHeight\n"
-                   "-----------------------------------------------\n", Vx, Vy, time);
-    hByInterval();
+           "The Vy value of V0 is %.16lf.\n\n"
+           "h by %.16lf time interval:\n\n"
+           "Time\t\t\t\tHeight\n"
+           "-----------------------------------------------\n", Vx, Vy, time);
+    hByInterval(time, flyingTime, Vy, g);
     printf("\nx by %.16lf time interval:\n\n"
-                   "Time\t\t\tDistance\n-----------------------------------------------\n", time);
-    xByInterval();
+           "Time\t\t\t\tDistance\n-----------------------------------------------\n", time);
+    xByInterval(time, flyingTime, Vx);
     printf("\nHighest point is %.16lf.\n\nDistance at highest point is %.16lf.", (Vy * Vy) / (2 * g),
            (Vx * flyingTime) / 2);
     return 0;
@@ -52,41 +54,35 @@ int main() {
 //This method is used to get values from user.
 double getValue() {
     //A character array to store user entered string.
-    char *a = (char *) malloc(sizeof(char));
+    char *a = (char *) malloc(sizeof(char)), *ptr;
     int boolean = 1;
     double returner;
     while (boolean) {
         fgets(a, INT_MAX, stdin);
-        if (a[strlen(a)-1]=='\n') {
-            a[strlen(a)-1] = '\0';
+        if (a[strlen(a) - 1] == '\n') {
+            a[strlen(a) - 1] = '\0';
         }
         switch (checkCharacters(a)) {
             case 0:
-                printf("Your value must be greater than zero! Please reenter: ");
-                break;
-            case 1:
-                printf("You entered invalid characters! Please reenter: ");
+                printf("You must enter positive integer number! Please reenter: ");
                 break;
             default:
                 boolean = 0;
         }
     }
-    returner = atof(a);
+    returner = strtod(a, &ptr);
     free(a);
     return returner;
 }
 
 int checkCharacters(char *a) {
-    int i, length = strlen(a);
+    int i, length = (int) strlen(a);
     for (i = 0; i < length; i++) {
-        if (!(isdigit(a[i]) || a[i] == '.' || a[i] == '-')) {
-            return 1;
+        if (!(isdigit(a[i]) || a[i] == '.')) {
+            return 0;
         }
     }
-    if (atof(a) <= 0) {
-        return 0;
-    }
-    return 2;
+    return 1;
 }
 
 double getValueWithBound(double b) {
@@ -103,16 +99,18 @@ double getValueWithBound(double b) {
     return a;
 }
 
-void hByInterval() {
-    double j;
-    for (j = time; j <= flyingTime; j += time) {
+void hByInterval(double time, double flyingTime, double Vy, double g) {
+    double j = time;
+    while (j <= flyingTime) {
         printf("%.16lf\t%.16lf\n", j, j * (Vy - (0.5 * g * j)));
+        j += time;
     }
 }
 
-void xByInterval() {
-    double j;
-    for (j = time; j < flyingTime; j += time) {
+void xByInterval(double time, double flyingTime, double Vx) {
+    double j = time;
+    while (j <= flyingTime) {
         printf("%.16lf\t%.16lf\n", j, j * Vx);
+        j += time;
     }
 }
